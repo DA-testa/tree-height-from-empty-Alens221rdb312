@@ -1,8 +1,10 @@
 #Python3
 
-import os
 import sys
 import threading
+import numpy
+import os
+
 
 def compute_height(n, parents):
     # Write this function
@@ -31,31 +33,24 @@ def compute_height(n, parents):
 
 
 def main():
-    # get input type (k - keyboard, F - file)
     input_type = input("Input type (k - keyboard, F - file): ").strip().lower()
-    
-    # get input
+    while input_type not in ['k', 'f']:
+        print("Invalid input type. Please enter 'k' or 'F'.")
+        input_type = input("Input type (k - keyboard, F - file): ").strip().lower()
     if input_type == 'k':
-        # keyboard input
-        n = int(input())
-        parents = list(map(int, input().split()))
-    elif input_type == 'f':
-        # file input
+        n = int(input("Enter number of nodes: "))
+        parents = list(map(int, input("Enter parents of nodes separated by spaces: ").split()))
+    else:
         filename = input("Enter file name (without letter 'a'): ")
-        if 'a' in filename:
-            print("Invalid file name")
-            return
-        if not os.path.isfile(f"folder/{filename}"):
+        while 'a' in filename:
+            print("File name cannot contain the letter 'a'.")
+            filename = input("Enter file name (without letter 'a'): ")
+        if not os.path.exists('inputs/' + filename):
             print("File not found.")
             return
-        with open(f"folder/{filename}", 'r') as f:
-            n = int(f.readline())
-            parents = list(map(int, f.readline().split()))
-    else:
-        print("Invalid input type")
-        return
-    
-    # compute and output height
+        with open('inputs/' + filename) as file:
+            n = int(file.readline())
+            parents = list(map(int, file.readline().split()))
     print(compute_height(n, parents))
 
 
