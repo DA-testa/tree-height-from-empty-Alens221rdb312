@@ -30,8 +30,8 @@ def compute_height(n, parents):
 def main():
 
     # implement input form keyboard and from files
-    text = input("Enter 'k' for input or 'F' for file")
-    if "k" in text:
+    text = input("Enter 'I' for input or 'F' for file")
+    if "I" in text:
         n = int(input())
         parents = list(map(int, input().split()))
         # account for github input inprecision
@@ -54,7 +54,7 @@ def main():
             print("Error: Invalid input format")
             return
     else:
-        print("Enter 'k' or 'F':")
+        print("Enter 'I' or 'F':")
         return 
     # input number of elements
     # input values in one variable, separate with space, split these values in an array
