@@ -3,68 +3,60 @@
 import sys
 import threading
 import numpy
+import os
 
 
 def compute_height(n, parents):
     # Write this function
-    children = {}
-    for i in range(n):
-        parent = parents[i]
-        if parent == -1:
-            root = i
-        else:
-            if parent not in children:
-                children[parent] = []
-            children[parent].append(i)
-    # Your code here
-    def compute_subtree_height(node):
-        if node not in children:
-            return 1
-        subtree_heights = [compute_subtree_height(child) for child in children[node]]
-        return max(subtree_heights) + 1
-    
-    return compute_subtree_height(root)
+    max_height = 0
+    heights = [0] * n
+    for vertex in range(n):
+        if heights[vertex] != 0:
+            continue
+        height = 0
+        i = vertex
+        while i != -1:
+            if heights[i] != 0:
+                height += heights[i]
+                break
+            height += 1
+            i = parents[i]
+        max_height = max(max_height, height)
+        i = vertex
+        while i != -1:
+            if heights[i] != 0:
+                break
+            heights[i] = height
+            height -= 1
+            i = parents[i]
+    return max_height
+
 
 def main():
-    # implement input form keyboard and from files
     input_type = input("Input type (k - keyboard, F - file): ").strip().lower()
-    
-    
+    while input_type not in ['k', 'f']:
+        print("Invalid input type. Please enter 'k' or 'F'.")
+        input_type = input("Input type (k - keyboard, F - file): ").strip().lower()
     if input_type == 'k':
-
         n = int(input("Enter number of nodes: "))
-        parents = list(map(int, input("Enter parent seperated by space: ").split()))
-    elif input_type == 'f':
-        while True:
-            try:
-                filename = input("Enter file name (without letter 'a'): ")    
-                if 'a' in filename:
-                    raise ValueError("File name cannot contain letter 'a'.")
-    
-                with open(f"folder/{filename}", 'r') as f:
-                    n = int(f.readline().strip())
-                    parents = list(map(int, f.readline().strip().split()))
-                break
-            except FileNotFoundError:
-                print("File not found.")
-            except ValueError as e:
-                print(e)
-        else:
-            print("Invalid input type.")
+        parents = list(map(int, input("Enter parents of nodes separated by spaces: ").split()))
+    else:
+        filename = input("Enter file name (without letter 'a'): ")
+        while 'a' in filename:
+            print("File name cannot contain the letter 'a'.")
+            filename = input("Enter file name (without letter 'a'): ")
+        if not os.path.exists('inputs/' + filename):
+            print("File not found.")
             return
+        with open('inputs/' + filename) as file:
+            n = int(file.readline())
+            parents = list(map(int, file.readline().split()))
+    print(compute_height(n, parents))
 
-        print("Tree height:",compute_height(n, parents))
-    # let user input file name to use, don't allow file names with letter a
-    # account for github input inprecision
-    
-    # input number of elements
-    # input values in one variable, separate with space, split these values in an array
-    # call the function and output it's result
+
 # In Python, the default limit on recursion depth is rather low,
 # so raise it here for this problem. Note that to take advantage
 # of bigger stack, we have to launch the computation in a new thread.
 sys.setrecursionlimit(10**7)  # max depth of recursion
 threading.stack_size(2**27)   # new thread will get stack of such size
 threading.Thread(target=main).start()
-main()
-# print(numpy.array([1,2,3]))
